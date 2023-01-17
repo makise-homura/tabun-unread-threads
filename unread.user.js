@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.0.1
+// @version      0.0.2
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
 // @grant        none
@@ -71,10 +71,10 @@ const nopostspic = '//cdn.everypony.ru/storage/06/08/97/2023/01/17/315b1451fa.gi
     if (loadedPages == lastPage)
     {
       clearInterval(waiting);
-      if(DocumentFragment.childElementCount > 0)
+      if(docFragment.childElementCount > 0)
       {
-      	docFragment.childNodes.forEach((a) => {articleNode.appendChild(a);});
-      	articleNode.removeChild(loadingNode);
+        docFragment.childNodes.forEach((a) => {articleNode.appendChild(a);});
+        articleNode.removeChild(loadingNode);
       }
       else
       {

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.0.3
+// @version      0.1.0
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
 // @match        https://tabun.everypony.info/*
@@ -42,46 +42,53 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   const articleNode = document.querySelector('#content-wrapper #content');
   articleNode.querySelectorAll('article').forEach((e) => {e.parentNode.removeChild(e);});
   const loadingNode = document.createElement('div');
-  loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (всего ' + lastPage + ')...';
   articleNode.appendChild(loadingNode);
 
-  var loadedPages = 0;
   var docFragment = document.createDocumentFragment();
-  for (curPage = 1; curPage <= lastPage; curPage++)
-  {
-    fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
-    .then((r) =>
-    {
-      return r.text();
-    })
-    .then((t) =>
-    {
-      let domParser = new DOMParser();
-      return domParser.parseFromString(t, "text/html");
-    })
-    .then((d) =>
-    {
-      loadedPages++;
-      d.querySelectorAll('#content-wrapper #content article').forEach((e) => 
-      {
-        if (e.querySelectorAll('li.topic-info-comments a.new').length > 0) docFragment.appendChild(e);
-      });
-    });
-  }
+  var curPage = 0;
+  var loadNextPage = true;
 
   var waiting = setInterval(() =>
   {
-    if (loadedPages == lastPage)
+    if (loadNextPage)
     {
-      clearInterval(waiting);
-      if(docFragment.childElementCount > 0)
+      if (curPage == lastPage)
       {
-        docFragment.childNodes.forEach((a) => {articleNode.appendChild(a);});
-        articleNode.removeChild(loadingNode);
+        clearInterval(waiting);
+        if(docFragment.childElementCount > 0)
+        {
+          docFragment.childNodes.forEach((a) => {articleNode.appendChild(a);});
+          articleNode.removeChild(loadingNode);
+        }
+        else
+        {
+          loadingNode.innerHTML = '<img src="//cdn.' + domain + nopostspic + '" /> &mdash; Новых комментариев в твоих постах нет, почитай тогда уж посты других людей :)';
+        }
       }
       else
       {
-        loadingNode.innerHTML = '<img src="//cdn.' + domain + nopostspic + '" /> &mdash; Новых комментариев в твоих постах нет, почитай тогда уж посты других людей :)';
+        loadNextPage = false;
+        curPage++;
+        loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (' + curPage + '/' + lastPage + ')...';
+
+        fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
+        .then((r) =>
+        {
+          return r.text();
+        })
+        .then((t) =>
+        {
+          let domParser = new DOMParser();
+          return domParser.parseFromString(t, "text/html");
+        })
+        .then((d) =>
+        {
+          d.querySelectorAll('#content-wrapper #content article').forEach((e) =>
+          {
+            if (e.querySelectorAll('li.topic-info-comments a.new').length > 0) docFragment.appendChild(e);
+          });
+          loadNextPage = true;
+        });
       }
     }
   }, 100);

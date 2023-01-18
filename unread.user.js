@@ -1,16 +1,19 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.0.2
+// @version      0.0.3
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
+// @match        https://tabun.everypony.info/*
 // @grant        none
 // ==/UserScript==
 
-const loadingpic = '//cdn.everypony.ru/storage/06/08/97/2023/01/17/5f0aa790d5.gif';
-const nopostspic = '//cdn.everypony.ru/storage/06/08/97/2023/01/17/315b1451fa.gif';
+const loadingpic = '/storage/06/08/97/2023/01/17/5f0aa790d5.gif';
+const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 
 (() =>
 {
+  const domain = window.location.href.includes('everypony.info') ? 'everypony.info' : 'everypony.ru';
+
   const navPillsNode = document.querySelector('.nav-pills-profile');
   if (!navPillsNode) return;
 
@@ -39,24 +42,24 @@ const nopostspic = '//cdn.everypony.ru/storage/06/08/97/2023/01/17/315b1451fa.gi
   const articleNode = document.querySelector('#content-wrapper #content');
   articleNode.querySelectorAll('article').forEach((e) => {e.parentNode.removeChild(e);});
   const loadingNode = document.createElement('div');
-  loadingNode.innerHTML = '<img src="' + loadingpic + '" /> &mdash; Загрузка страниц (всего ' + lastPage + ')...';
+  loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (всего ' + lastPage + ')...';
   articleNode.appendChild(loadingNode);
 
   var loadedPages = 0;
   var docFragment = document.createDocumentFragment();
   for (curPage = 1; curPage <= lastPage; curPage++)
   {
-    fetch('https://tabun.everypony.ru/profile/' + username + '/created/topics/page' + curPage)
+    fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
     .then((r) =>
     {
       return r.text();
     })
-    .then((t) => 
+    .then((t) =>
     {
       let domParser = new DOMParser();
       return domParser.parseFromString(t, "text/html");
     })
-    .then((d) => 
+    .then((d) =>
     {
       loadedPages++;
       d.querySelectorAll('#content-wrapper #content article').forEach((e) => 
@@ -78,7 +81,7 @@ const nopostspic = '//cdn.everypony.ru/storage/06/08/97/2023/01/17/315b1451fa.gi
       }
       else
       {
-        loadingNode.innerHTML = '<img src="' + nopostspic + '" /> &mdash; Новых комментариев в твоих постах нет, почитай тогда уж посты других людей :)';
+        loadingNode.innerHTML = '<img src="//cdn.' + domain + nopostspic + '" /> &mdash; Новых комментариев в твоих постах нет, почитай тогда уж посты других людей :)';
       }
     }
   }, 100);

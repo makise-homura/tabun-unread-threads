@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.1.1
+// @version      0.1.2
 // @description  Добавляет на страницу публикаций залогиненного пользователя вкладу для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -47,6 +47,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 
   var docFragment = document.createDocumentFragment();
   var curPage = 0;
+  var unread = 0;
   var loadNextPage = true;
 
   var waiting = setInterval(() =>
@@ -70,7 +71,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
       {
         loadNextPage = false;
         curPage++;
-        loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (' + curPage + '/' + lastPage + ')...';
+        loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (' + curPage + '/' + lastPage + ')' + (unread > 0 ? ', непрочитанных тредов: ' + unread : '') + '...';
 
         fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
         .then((r) =>
@@ -86,7 +87,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
         {
           d.querySelectorAll('#content-wrapper #content article').forEach((e) =>
           {
-            if (e.querySelectorAll('li.topic-info-comments a.new').length > 0) docFragment.appendChild(e);
+            if (e.querySelectorAll('li.topic-info-comments a.new').length > 0) {unread++; docFragment.appendChild(e);}
           });
           loadNextPage = true;
         });

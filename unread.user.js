@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.1.5
+// @version      0.1.6
 // @description  Добавляет на страницу публикаций залогиненного пользователя вкладу для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -19,7 +19,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   if (!navPillsNode) return;
 
   const username = document.querySelector('.username').text;
-  if (!window.location.href.includes('/profile/' + username + '/created')) return;
+  if (!window.location.href.includes('/profile/' + username) return;
 
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');

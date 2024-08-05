@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.1.7
+// @version      0.1.8
 // @description  Добавляет на страницу публикаций залогиненного пользователя вкладу для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*

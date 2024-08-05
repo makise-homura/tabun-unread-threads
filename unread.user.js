@@ -19,9 +19,9 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   if (!navPillsNode) return;
 
   var username = "";
-  document.querySelectorAll('.username').forEach((e) => {console.log(e.text); if (e.text != "Мои топики") username = e.text;})
+  document.querySelectorAll('.username').forEach((e) => {if (e.text != "Мои топики") username = e.text;})
   if (!username) return;
-  if (!window.location.href.includes('/profile/' + username) return;
+  if (!window.location.href.includes('/profile/' + username)) return;
 
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');

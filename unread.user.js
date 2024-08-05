@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.1.4
+// @version      0.1.5
 // @description  Добавляет на страницу публикаций залогиненного пользователя вкладу для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -15,7 +15,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 {
   const domain = window.location.href.includes('everypony.info') ? 'everypony.info' : 'everypony.ru';
 
-  const navPillsNode = document.querySelector('.nav-pills-profile');
+  const navPillsNode = document.querySelector('ul.nav-profile');
   if (!navPillsNode) return;
 
   const username = document.querySelector('.username').text;
@@ -24,11 +24,13 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');
   navAnchorNode.setAttribute('href', '/profile/' + username + '/created/topics/?unread-posts');
-  navAnchorNode.innerHTML = 'С новыми комментариями';
+  navAnchorNode.innerHTML = 'Посты с новыми комментариями';
   navItemNode.appendChild(navAnchorNode);
-  navPillsNode.insertBefore(navItemNode, navPillsNode.childNodes[2]);
+  navPillsNode.insertBefore(navItemNode, navPillsNode.childNodes[4]);
 
   if (!window.location.href.includes('unread-posts')) return;
+  navPillsNode.childNodes.forEach((e) => {if(e.classList) e.classList.remove("active");})
+    navItemNode.classList.add("active");
 
   const lastPageRef = document.querySelector('.pagination ul:last-of-type li:last-of-type a').href.match('page[0-9]+');
   if (lastPageRef.length != 1) return;

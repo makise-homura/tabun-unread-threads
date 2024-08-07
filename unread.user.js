@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.1.8
-// @description  Добавляет на страницу публикаций залогиненного пользователя вкладу для просмотра постов с новыми комментариями
+// @version      0.1.9
+// @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
 // @match        https://tabun.everypony.info/*
@@ -32,17 +32,19 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 
   if (!window.location.href.includes('unread-posts')) return;
   navPillsNode.childNodes.forEach((e) => {if(e.classList) e.classList.remove("active");})
-    navItemNode.classList.add("active");
+  navItemNode.classList.add("active");
 
-  const lastPageRef = document.querySelector('.pagination ul:last-of-type li:last-of-type a').href.match('page[0-9]+');
-  if (lastPageRef.length != 1) return;
-  const lastPage = ~~lastPageRef[0].replace('page','');
+  var lastPage = 1;
+  const lastPageLink = document.querySelector('.pagination ul:last-of-type li:last-of-type a');
+  if (lastPageLink != null)
+  {
+    const lastPageRef = lastPageLink.href.match('page[0-9]+');
+    if (lastPageRef.length != 1) return;
+    lastPage = ~~lastPageRef[0].replace('page','');
+  }
 
-  const activeNavItemNode = document.querySelector('.nav-pills li.active');
-  if (activeNavItemNode) activeNavItemNode.classList.remove('active');
-  navItemNode.classList.add('active');
-
-  document.querySelector('.pagination').hidden = true;
+  const paginationNode = document.querySelector('.pagination');
+  if (paginationNode) paginationNode.hidden = true;
 
   const articleNode = document.querySelector('#content-wrapper #content');
   articleNode.querySelectorAll('article').forEach((e) => {e.parentNode.removeChild(e);});

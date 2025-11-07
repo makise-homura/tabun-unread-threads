@@ -37,7 +37,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   navItemNode.classList.add("active");
 
   var lastPage = 1;
-  const lastPageLink = document.querySelector('.pagination ul:last-of-type li:last-of-type a');
+  const lastPageLink = document.querySelector('.pagination a.last');
   if (lastPageLink != null)
   {
     const lastPageRef = lastPageLink.href.match('page[0-9]+');

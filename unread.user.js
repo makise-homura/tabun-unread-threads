@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.2.0
+// @version      0.2.1
 // @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -15,17 +15,21 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 
 (() =>
 {
+  // Find CDN hostname
   const domain = window.location.hostname.replace("tabun.","");
 
+  // Check if we're on correct tabun page
   const navPillsNode = document.querySelector('ul.nav-profile');
   if (!navPillsNode) return;
 
+  // Determine username and self-link
   var username = "";
   document.querySelectorAll('.username').forEach((e) => {if (e.text != "Мои топики") username = e.text;})
   if (!username) return;
   if (!window.location.href.includes('/profile/' + username)) return;
   const selfLink = '/profile/' + username + '/created/topics/?unread-posts';
 
+  // Put a link into the side menu
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');
   navAnchorNode.setAttribute('href', selfLink);
@@ -33,6 +37,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   navItemNode.appendChild(navAnchorNode);
   navPillsNode.insertBefore(navItemNode, navPillsNode.childNodes[4]);
 
+  // Put a link into the header menu
   const navTitleNode = document.createElement('a');
   navTitleNode.setAttribute('href', selfLink);
   navTitleNode.innerHTML = '(непрочитанные)';
@@ -43,10 +48,12 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
     navTitle.appendChild(navTitleNode);
   }
 
+  // If we're active: set correct menu item in the side menu
   if (!window.location.href.includes('unread-posts')) return;
   navPillsNode.childNodes.forEach((e) => {if(e.classList) e.classList.remove("active");})
   navItemNode.classList.add("active");
 
+  // Determine last page number
   var lastPage = 1;
   const lastPageLink = document.querySelector('.pagination a.last');
   if (lastPageLink != null)
@@ -56,14 +63,17 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
     lastPage = ~~lastPageRef[0].replace('page','');
   }
 
+  // Hide pagination interface: we'll show all on a single page
   const paginationNode = document.querySelector('.pagination');
   if (paginationNode) paginationNode.style = "display: none;";
 
+  // Display loading progress
   const articleNode = document.querySelector('#content-wrapper #content');
   articleNode.querySelectorAll('article').forEach((e) => {e.parentNode.removeChild(e);});
   const loadingNode = document.createElement('div');
   articleNode.appendChild(loadingNode);
 
+  // Load page by page
   var docFragment = document.createDocumentFragment();
   var curPage = 0;
   var unread = 0;
@@ -73,6 +83,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   {
     if (loadNextPage)
     {
+      // When no more pages, display resulting fragment or notice of no unread posts
       if (curPage == lastPage)
       {
         clearInterval(waiting);
@@ -86,12 +97,14 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
           loadingNode.innerHTML = '<img src="//cdn.' + domain + nopostspic + '" /> &mdash; Новых комментариев в твоих постах нет, почитай тогда уж посты других людей :)';
         }
       }
+      // When we have more pages to load, do it and parse them, updating progress
       else
       {
         loadNextPage = false;
         curPage++;
         loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (' + curPage + '/' + lastPage + ')' + (unread > 0 ? ', непрочитанных тредов: ' + unread : '') + '...';
 
+        // Load a page, then parse it and find unread post nodes, and if there are any, add them to the fragment to display
         fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
         .then((r) =>
         {

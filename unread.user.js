@@ -15,7 +15,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 
 (() =>
 {
-  const domain = window.location.href.includes('everypony.info') ? 'everypony.info' : 'everypony.ru';
+  const domain = window.location.hostname.replace("tabun.","");
 
   const navPillsNode = document.querySelector('ul.nav-profile');
   if (!navPillsNode) return;

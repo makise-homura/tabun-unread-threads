@@ -24,13 +24,24 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   document.querySelectorAll('.username').forEach((e) => {if (e.text != "Мои топики") username = e.text;})
   if (!username) return;
   if (!window.location.href.includes('/profile/' + username)) return;
+  const selfLink = '/profile/' + username + '/created/topics/?unread-posts';
 
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');
-  navAnchorNode.setAttribute('href', '/profile/' + username + '/created/topics/?unread-posts');
+  navAnchorNode.setAttribute('href', selfLink);
   navAnchorNode.innerHTML = 'Посты с новыми комментариями';
   navItemNode.appendChild(navAnchorNode);
   navPillsNode.insertBefore(navItemNode, navPillsNode.childNodes[4]);
+
+  const navTitleNode = document.createElement('a');
+  navTitleNode.setAttribute('href', selfLink);
+  navTitleNode.innerHTML = '(непрочитанные)';
+  const navTitle = document.querySelector("#dropdown-user-menu .item-topics");
+  if (navTitle)
+  {
+    navTitle.append(' ');
+    navTitle.appendChild(navTitleNode);
+  }
 
   if (!window.location.href.includes('unread-posts')) return;
   navPillsNode.childNodes.forEach((e) => {if(e.classList) e.classList.remove("active");})

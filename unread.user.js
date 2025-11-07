@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.2.2
+// @version      0.2.3
 // @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -17,10 +17,6 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 {
   // Find CDN hostname
   const domain = window.location.hostname.replace("tabun.","");
-
-  // Check if we're on correct tabun page
-  const navPillsNode = document.querySelector('ul.nav-profile');
-  if (!navPillsNode) return;
 
   // Determine username and self-link
   var username = "";
@@ -39,15 +35,18 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
     navTitle.appendChild(navTitleNode);
   }
 
-  // Put a link into the side menu, if we're on the profile page (otherwise exit)
+  // Check if we're on profile page, and user does match
+  const navPillsNode = document.querySelector('ul.nav-profile');
+  if (!navPillsNode) return;
   if (!window.location.href.includes('/profile/' + username)) return;
+
+  // Put a link into the side menu, if we're on the profile page (otherwise exit)
   const navItemNode = document.createElement('li');
   const navAnchorNode = document.createElement('a');
   navAnchorNode.setAttribute('href', selfLink);
   navAnchorNode.innerHTML = 'Посты с новыми комментариями';
   navItemNode.appendChild(navAnchorNode);
   navPillsNode.insertBefore(navItemNode, navPillsNode.childNodes[4]);
-
 
   // If we're active: set correct menu item in the side menu (otherwise exit)
   if (!window.location.href.includes('unread-posts')) return;

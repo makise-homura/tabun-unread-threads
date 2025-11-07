@@ -46,7 +46,7 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   }
 
   const paginationNode = document.querySelector('.pagination');
-  if (paginationNode) paginationNode.hidden = true;
+  if (paginationNode) paginationNode.style = "display: none;";
 
   const articleNode = document.querySelector('#content-wrapper #content');
   articleNode.querySelectorAll('article').forEach((e) => {e.parentNode.removeChild(e);});

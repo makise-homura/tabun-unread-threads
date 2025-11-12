@@ -93,7 +93,7 @@ const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
       if(loadResponse != 200)
       {
         loadingNode.innerHTML = '<img src="//cdn.' + domain + errorpic + '" /> &mdash; Проблема получения списка постов (код ' + loadResponse + ') :(';
-        if (loadResponse == 403) loadingNode.innerHTML += '<br>Возможно, у тебя проблема с Cloudflare, и стоит сменить зеркало табуна на <a href="/storage/06/08/97/2025/11/12/4c38ea5304.gif">https://tabun.everypony.me</a>.';
+        if (loadResponse == 403) loadingNode.innerHTML += '<br>Возможно, у тебя проблема с Cloudflare, и стоит сменить зеркало табуна на <a href="https://tabun.everypony.me">https://tabun.everypony.me</a>.';
       }
       else if (curPage > lastPage)
       {

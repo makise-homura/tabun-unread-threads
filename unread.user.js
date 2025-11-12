@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.2.5
+// @version      0.2.6
 // @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -88,13 +88,14 @@ const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
   {
     if (loadNextPage)
     {
+      loadNextPage = false;
       // When no more pages, display resulting fragment or notice of no unread posts
       if(loadResponse != 200)
       {
         loadingNode.innerHTML = '<img src="//cdn.' + domain + errorpic + '" /> &mdash; Проблема получения списка постов (код ' + loadResponse + ') :(';
         if (loadResponse == 403) loadingNode.innerHTML += '<br>Возможно, у тебя проблема с Cloudflare, и стоит сменить зеркало табуна на <a href="/storage/06/08/97/2025/11/12/4c38ea5304.gif">https://tabun.everypony.me</a>.';
       }
-      else if (curPage == lastPage)
+      else if (curPage > lastPage)
       {
         clearInterval(waiting);
         if(docFragment.childElementCount > 0)
@@ -110,7 +111,6 @@ const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
       // When we have more pages to load, do it and parse them, updating progress
       else
       {
-        loadNextPage = false;
         curPage++;
         loadingNode.innerHTML = '<img src="//cdn.' + domain + loadingpic + '" /> &mdash; Загрузка страниц (' + curPage + '/' + lastPage + ')' + (unread > 0 ? ', непрочитанных тредов: ' + unread : '') + '...';
 
@@ -133,12 +133,12 @@ const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
         })
         .then((d) =>
         {
+          loadNextPage = true;
           if(d === false) return false;
           d.querySelectorAll('#content-wrapper #content article').forEach((e) =>
           {
             if (e.querySelectorAll('a.topic-info-comments.has-new').length > 0) {unread++; docFragment.appendChild(e);}
           });
-          loadNextPage = true;
         });
       }
     }

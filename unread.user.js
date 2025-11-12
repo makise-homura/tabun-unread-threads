@@ -17,7 +17,9 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
 (() =>
 {
   // Find CDN hostname
-  const domain = window.location.hostname.replace("tabun.","");
+  var domain = window.location.hostname.replace("tabun.","");
+  if (domain == "me") domain = "everypony.me";
+
 
   // Determine username and self-link
   var username = "";

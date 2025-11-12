@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.2.4
+// @version      0.2.5
 // @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -13,6 +13,7 @@
 
 const loadingpic = '/storage/06/08/97/2023/01/17/5f0aa790d5.gif';
 const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
+const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
 
 (() =>
 {
@@ -81,13 +82,19 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
   var curPage = 0;
   var unread = 0;
   var loadNextPage = true;
+  var loadResponse = 200;
 
   var waiting = setInterval(() =>
   {
     if (loadNextPage)
     {
       // When no more pages, display resulting fragment or notice of no unread posts
-      if (curPage == lastPage)
+      if(loadResponse != 200)
+      {
+        loadingNode.innerHTML = '<img src="//cdn.' + domain + errorpic + '" /> &mdash; Проблема получения списка постов (код ' + loadResponse + ') :(';
+        if (loadResponse == 403) loadingNode.innerHTML += '<br>Возможно, у тебя проблема с Cloudflare, и стоит сменить зеркало табуна на <a href="/storage/06/08/97/2025/11/12/4c38ea5304.gif">https://tabun.everypony.me</a>.';
+      }
+      else if (curPage == lastPage)
       {
         clearInterval(waiting);
         if(docFragment.childElementCount > 0)
@@ -111,15 +118,22 @@ const nopostspic = '/storage/06/08/97/2023/01/17/315b1451fa.gif';
         fetch('https://tabun.' + domain + '/profile/' + username + '/created/topics/page' + curPage)
         .then((r) =>
         {
+          if(!r.ok)
+          {
+            loadResponse = r.status;
+            return false;
+          }
           return r.text();
         })
         .then((t) =>
         {
+          if(t === false) return false;
           let domParser = new DOMParser();
           return domParser.parseFromString(t, "text/html");
         })
         .then((d) =>
         {
+          if(d === false) return false;
           d.querySelectorAll('#content-wrapper #content article').forEach((e) =>
           {
             if (e.querySelectorAll('a.topic-info-comments.has-new').length > 0) {unread++; docFragment.appendChild(e);}

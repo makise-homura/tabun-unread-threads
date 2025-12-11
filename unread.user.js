@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Непрочитанные посты на Табуне
-// @version      0.2.7
+// @version      0.2.8
 // @description  Добавляет на страницу профиля залогиненного пользователя пункт для просмотра постов с новыми комментариями
 // @author       makise_homura
 // @match        https://tabun.everypony.ru/*
@@ -24,7 +24,7 @@ const errorpic   = '/storage/06/08/97/2025/11/12/4c38ea5304.gif';
 
   // Determine username and self-link
   var username = "";
-  document.querySelectorAll('.username').forEach((e) => {if (e.text != "Мои топики") username = e.text;})
+  document.querySelectorAll('#dropdown-user a.username').forEach((e) => {if (e.text != "Мои топики") username = e.text;})
   if (!username) return;
   const selfLink = '/profile/' + username + '/created/topics/?unread-posts';
 
